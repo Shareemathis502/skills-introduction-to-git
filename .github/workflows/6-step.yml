@@ -5,10 +5,7 @@ on:
     types:
       - edited
 
-permissions:
-  contents: write
-  actions: write
-  issues: write
+permissions: {}
 
 env:
   REVIEW_FILE: ".github/steps/x-review.md"
@@ -16,12 +13,20 @@ env:
 jobs:
   find_exercise:
     name: Find Exercise Issue
+    permissions:
+      contents: write
+      actions: write
+      issues: write
     uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.7.0
 
   post_review_content:
     name: Post review content
     needs: [find_exercise]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      issues: write
     env:
       ISSUE_REPOSITORY: ${{ github.repository }}
       ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
@@ -59,6 +64,10 @@ jobs:
   finish_exercise:
     name: Finish Exercise
     needs: [find_exercise, post_review_content]
+    permissions:
+      contents: write
+      actions: write
+      issues: write
     uses: skills/exercise-toolkit/.github/workflows/finish-exercise.yml@v0.7.0
     with:
       issue-url: ${{ needs.find_exercise.outputs.issue-url }}
